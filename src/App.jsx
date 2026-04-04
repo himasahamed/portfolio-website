@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 
 // ========== SINGLE TYPING QUOTE COMPONENT ==========
 const TypingQuote = () => {
@@ -70,8 +71,10 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [viewMode, setViewMode] = useState('technical');
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { scrollYProgress } = useScroll();
   const backgroundColor = useTransform(scrollYProgress, [0, 1], ['#0a0f1e', '#030712']);
+  const form = useRef();
   
   const stats = [
     { number: "6+", label: "Months Experience", icon: "💼" },
@@ -204,10 +207,28 @@ const App = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
-  const handleSubmit = (e) => {
+  // EmailJS send email function
+  const sendEmail = (e) => {
     e.preventDefault();
-    alert(`Thanks ${formData.name}! I'll get back to you soon.`);
-    setFormData({ name: '', email: '', message: '' });
+    setIsSubmitting(true);
+    
+    emailjs.sendForm(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      form.current,
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    )
+    .then((result) => {
+      alert(`Thanks ${formData.name}! Your message has been sent successfully. I'll get back to you soon.`);
+      setFormData({ name: '', email: '', message: '' });
+      form.current.reset();
+      setIsSubmitting(false);
+    })
+    .catch((error) => {
+      alert('Failed to send message. Please try again or email me directly at thaseemhimas3@gmail.com');
+      console.error('EmailJS Error:', error);
+      setIsSubmitting(false);
+    });
   };
   
   const downloadResume = () => {
@@ -472,7 +493,7 @@ const App = () => {
                 <div className="flex gap-4 mt-6 flex-wrap">
                   <a href="https://github.com/himasahamed" target="_blank" className="text-gray-400 hover:text-white transition text-sm">GitHub</a>
                   <span className="text-gray-600">|</span>
-                  <a href="#" className="text-gray-400 hover:text-white transition text-sm">LinkedIn</a>
+                  <a href="https://www.linkedin.com/in/himasahamed" target="_blank" className="text-gray-400 hover:text-white transition text-sm">LinkedIn</a>
                   <span className="text-gray-600">|</span>
                   <button onClick={downloadResume} className="text-gray-400 hover:text-white transition text-sm">Resume</button>
                 </div>
@@ -640,7 +661,7 @@ const App = () => {
         </div>
       </section>
       
-      {/* Projects Section - ALL 7 PROJECTS */}
+      {/* Projects Section */}
       <section id="projects" className="relative z-10 py-16 sm:py-20">
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div
@@ -705,7 +726,7 @@ const App = () => {
         </div>
       </section>
       
-      {/* Contact Section */}
+      {/* Contact Section - With EmailJS Integration */}
       <section id="contact" className="relative z-10 py-16 sm:py-20">
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div
@@ -719,12 +740,13 @@ const App = () => {
             </h2>
             
             <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+              {/* Contact Info */}
               <div className="space-y-5 sm:space-y-6">
                 <div className="p-5 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
                   <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Let's Connect</h3>
                   <div className="space-y-2 sm:space-y-3 text-gray-300 text-sm sm:text-base">
                     <p className="flex items-center gap-3 break-all">
-                      <span className="text-orange-400">📧</span> himasahamet@gmail.com
+                      <span className="text-orange-400">📧</span> thaseemhimas3@gmail.com
                     </p>
                     <p className="flex items-center gap-3">
                       <span className="text-orange-400">📱</span> +94-757-181-903
@@ -741,17 +763,20 @@ const App = () => {
                 <div className="p-5 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
                   <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Follow Me</h3>
                   <div className="flex gap-3 sm:gap-4 flex-wrap">
-                    <a href="https://github.com/himasahamed" target="_blank" className="p-2 sm:p-3 rounded-full bg-white/10 hover:bg-white/20 transition">
+                    {/* GitHub */}
+                    <a href="https://github.com/himasahamed" target="_blank" rel="noopener noreferrer" className="p-2 sm:p-3 rounded-full bg-white/10 hover:bg-white/20 transition">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026.8-.223 1.65-.334 2.5-.334.85 0 1.7.111 2.5.334 1.91-1.295 2.75-1.026 2.75-1.026.544 1.378.201 2.397.098 2.65.64.7 1.029 1.595 1.029 2.688 0 3.846-2.339 4.695-4.565 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
                       </svg>
                     </a>
-                    <a href="#" className="p-2 sm:p-3 rounded-full bg-white/10 hover:bg-white/20 transition">
+                    {/* LinkedIn */}
+                    <a href="https://www.linkedin.com/in/himasahamed" target="_blank" rel="noopener noreferrer" className="p-2 sm:p-3 rounded-full bg-white/10 hover:bg-white/20 transition">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                       </svg>
                     </a>
-                    <a href="#" className="p-2 sm:p-3 rounded-full bg-white/10 hover:bg-white/20 transition">
+                    {/* Twitter/X */}
+                    <a href="https://twitter.com/himasahamed" target="_blank" rel="noopener noreferrer" className="p-2 sm:p-3 rounded-full bg-white/10 hover:bg-white/20 transition">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 0021.337-11.63c0-.214-.005-.428-.015-.64.98-.675 1.755-1.557 2.4-2.55z"/>
                       </svg>
@@ -760,13 +785,14 @@ const App = () => {
                 </div>
               </div>
               
-              <form onSubmit={handleSubmit} className="p-5 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+              {/* Contact Form - With EmailJS */}
+              <form ref={form} onSubmit={sendEmail} className="p-5 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
                     <input
                       type="text"
-                      name="name"
+                      name="from_name"
                       value={formData.name}
                       onChange={handleInputChange}
                       required
@@ -778,7 +804,7 @@ const App = () => {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                     <input
                       type="email"
-                      name="email"
+                      name="from_email"
                       value={formData.email}
                       onChange={handleInputChange}
                       required
@@ -802,9 +828,12 @@ const App = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    className="w-full py-3 bg-gradient-to-r from-orange-500 to-blue-500 rounded-lg font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition text-sm sm:text-base"
+                    disabled={isSubmitting}
+                    className={`w-full py-3 bg-gradient-to-r from-orange-500 to-blue-500 rounded-lg font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition text-sm sm:text-base ${
+                      isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                    }`}
                   >
-                    Let's Talk! →
+                    {isSubmitting ? 'Sending...' : "Let's Talk! →"}
                   </motion.button>
                 </div>
               </form>
