@@ -1,0 +1,6 @@
+# Allow all search engines to crawl
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://portfolio-website-501cjh4rq-himasahameds-projects.vercel.app/sitemap.xml
