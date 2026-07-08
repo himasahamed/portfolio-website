@@ -4,7 +4,7 @@ import emailjs from '@emailjs/browser';
 
 // ========== STRUCTURED DATA COMPONENT FOR SEO ==========
 const StructuredData = () => {
-  const siteUrl = "https://portfolio-website-gules-alpha-59.vercel.app/";
+  const siteUrl = "https://portfolio-website-peach-omega.vercel.app/";
   
   return (
     <>
@@ -1015,7 +1015,7 @@ const App = () => {
               📍 81 B Old Post Office Road, Palamunai, Dehiwala, Sri Lanka
             </p>
             <p className="mt-1 text-[10px] sm:text-xs text-gray-500">
-              <a href="https://portfolio-website-gules-alpha-59.vercel.app/" className="hover:text-gray-300 transition">View Portfolio</a>
+              <a href="https://portfolio-website-peach-omega.vercel.app/" className="hover:text-gray-300 transition">View Portfolio</a>
             </p>
           </div>
         </footer>
