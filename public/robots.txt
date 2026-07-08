@@ -1,4 +1,4 @@
 User-agent: *
-Allow: /n 
+Allow: /
 
-Sitemap: https://portfolio-website-peach-omega.vercel.app/sitemap.xml
+Sitemap: https://portfolio-website-gules-alpha-59.vercel.app/sitemap.xml
